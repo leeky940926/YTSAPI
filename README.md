@@ -80,7 +80,7 @@ DELETE /movies/{int:movie_id}/reviews/{int:review_id}/votes/{int:review_vote_id}
 
 ## Postman API Documentation
 
-![Postman API Documentation 명세서](https://documenter.getpostman.com/view/17716434/UVRAH6TB)
+[Postman API ](https://documenter.getpostman.com/view/17716434/UVRAH6TB)
 
 
 <br>
