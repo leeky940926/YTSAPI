@@ -32,3 +32,12 @@ class MovieGenre(TimeStampModel) :
     
     class Meta :
         db_table = 'movies_genres'
+
+class Review(TimeStampModel) :
+    movie  = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    text   = models.TextField()
+    rating = models.DecimalField(max_digits=5, decimal_places=3)
+    vote   = models.IntegerField()
+    
+    class Meta :
+        db_table = 'reviews'
