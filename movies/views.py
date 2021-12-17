@@ -60,7 +60,7 @@ class MovieView(View) :
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
 
         except IntegrityError :
-            return JsonResponse({'message' : 'IntegrityError'}, status=400)
+            return JsonResponse({'message' : 'INTEGRITY_ERROR'}, status=400)
 
         except TypeError : 
             return JsonResponse({'message' : 'TYPE_ERROR'}, status=400)
@@ -92,6 +92,28 @@ class DetailMovieView(View) :
 
         except Movie.DoesNotExist :
             return JsonResponse({'message' : 'MOVIE_DOES_NOT_EXIST'}, status=400)
+    
+    def post(self, request, movie_id) :
+        try :
+            with transaction.atomic() :
+                data = json.loads(request.body)
+                
+                text   = data['text']
+                rating = data['rating']
+            
+                Review.objects.create(
+                    movie_id = movie_id,
+                    text     = text,
+                    rating   = rating
+                )
+                
+                return JsonResponse({'message' : 'CREATED_SUCCESS'}, status=201)
+        
+        except KeyError :
+            return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
+
+        except IntegrityError :
+            return JsonResponse({'message' : 'INTEGRITY_ERROR'}, status=400)
 
 class DetailReviewView(View) :
     def get(self, request, movie_id, review_id) :

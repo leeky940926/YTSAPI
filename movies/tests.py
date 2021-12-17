@@ -170,6 +170,21 @@ class TestMovieView(TransactionTestCase) :
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : 'TYPE_ERROR'})
     
+    def test_failure_post_movie_raise_integrity_error(self) :
+        client = Client()
+        
+        data = {
+            'title' : 'test title',
+            'year' : 20201,
+            'genres' : [1,2,1111],
+            'summary' : 'test summary'
+        }
+        
+        response = client.post('/movies', json.dumps(data), content_type='application/json')
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'message' : 'INTEGRITY_ERROR'})
+    
 class DetailMovieView(TestCase) :
     
     TestCase.maxDiff = None
@@ -288,6 +303,30 @@ class DetailMovieView(TestCase) :
             'message' : 'MOVIE_DOES_NOT_EXIST'
         })
     
+    def test_success_post_review(self) :
+        client = Client()
+        
+        data = {
+            'text'   : 'new review',
+            'rating' : 9.21
+        }
+        
+        response = client.post('/movies/1', json.dumps(data), content_type='application/json')
+        
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json(), {'message' : 'CREATED_SUCCESS'})
+    
+    def test_failure_post_review_raise_key_error(self) :
+        client = Client()
+        
+        data = {
+            'text'   : 'new review'
+        }
+        
+        response = client.post('/movies/1', json.dumps(data), content_type='application/json')
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'message' : 'KEY_ERROR'})
 
 class TestDetailReviewView(TestCase) :
 
