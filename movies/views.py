@@ -8,7 +8,8 @@ from django.db.utils import IntegrityError
 from movies.filterlists import MovieFilter
 from movies.models      import (
     Movie,
-    MovieGenre
+    MovieGenre,
+    Review
 )
 class MovieView(View) :
     def get(self, request) :  
@@ -91,3 +92,20 @@ class DetailMovieView(View) :
 
         except Movie.DoesNotExist :
             return JsonResponse({'message' : 'MOVIE_DOES_NOT_EXIST'}, status=400)
+
+class DetailReviewView(View) :
+    def get(self, request, movie_id, review_id) :
+        try :
+            review = Review.objects.prefetch_related('movie').get(movie__id=movie_id, id=review_id)
+            
+            detail_review = {
+                'id'         : review.id,
+                'title'      : review.text,
+                'rating'     : round(review.rating, 2),
+                'created_at' : review.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            }
+            
+            return JsonResponse({'detail_review' : detail_review}, status=200)
+        
+        except Review.DoesNotExist :
+            return JsonResponse({'message' : 'REVIEW_DOES_NOT_EXIST'}, status=400)
