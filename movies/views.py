@@ -131,3 +131,18 @@ class DetailReviewView(View) :
         
         except Review.DoesNotExist :
             return JsonResponse({'message' : 'REVIEW_DOES_NOT_EXIST'}, status=400)
+    
+    def put(self, requset, movie_id, review_id) :
+        try :
+            with transaction.atomic() :
+                data = json.loads(requset.body)
+
+                text   = data['text']
+                rating = data['rating']
+
+                Review.objects.filter(movie__id=movie_id, id=review_id).update(text=text, rating=rating)
+
+                return JsonResponse({'message' : 'UPDATED_SUCCESS'}, status=201)
+            
+        except KeyError :
+            return JsonResponse({'message' : 'KEY_ERROR'}, status=400) 

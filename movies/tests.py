@@ -1,4 +1,5 @@
 import json
+from django.db import transaction
 
 from django.test import (
     TestCase,
@@ -185,9 +186,9 @@ class TestMovieView(TransactionTestCase) :
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : 'INTEGRITY_ERROR'})
     
-class DetailMovieView(TestCase) :
+class DetailMovieView(TransactionTestCase) :
     
-    TestCase.maxDiff = None
+    TransactionTestCase.maxDiff = None
     
     def setUp(self) :
         language_list = [
@@ -245,8 +246,8 @@ class DetailMovieView(TestCase) :
         MovieGenre.objects.bulk_create(movie_genre_list)
         
         review_list = [
-            Review(movie_id=1, text='재밌어요', rating=9, vote=1),
-            Review(movie_id=1, text='별로에요', rating=5, vote=0)
+            Review(id=1, movie_id=1, text='재밌어요', rating=9, vote=1),
+            Review(id=2, movie_id=1, text='별로에요', rating=5, vote=0)
         ]
         Review.objects.bulk_create(review_list)
     
@@ -328,9 +329,9 @@ class DetailMovieView(TestCase) :
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : 'KEY_ERROR'})
 
-class TestDetailReviewView(TestCase) :
+class TestDetailReviewView(TransactionTestCase) :
 
-    TestCase.maxDiff = None
+    TransactionTestCase.maxDiff = None
     
     def setUp(self) :
         language_list = [
@@ -388,8 +389,8 @@ class TestDetailReviewView(TestCase) :
         MovieGenre.objects.bulk_create(movie_genre_list)
         
         review_list = [
-            Review(movie_id=1, text='재밌어요', rating=9, vote=1),
-            Review(movie_id=1, text='별로에요', rating=5, vote=0)
+            Review(id=1, movie_id=1, text='재밌어요', rating=9, vote=1),
+            Review(id=2, movie_id=1, text='별로에요', rating=5, vote=0)
         ]
         Review.objects.bulk_create(review_list)
     
@@ -422,4 +423,16 @@ class TestDetailReviewView(TestCase) :
         
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : 'REVIEW_DOES_NOT_EXIST'})
+    
+    def test_success_update_review(self) :
+        client = Client()
         
+        data = {
+            'text' : 'hihi',
+            'rating' : 5.5
+        }
+        
+        response = client.put('/movies/1/1', json.dumps(data), content_type='application/json')
+        
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json(), {'message' : 'UPDATED_SUCCESS'})
