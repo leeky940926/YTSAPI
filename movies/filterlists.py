@@ -28,4 +28,4 @@ class MovieFilter :
         
         movies = Movie.objects.prefetch_related('genre').filter(movie_filter).order_by('-created_at')[offset:offset+limit]
             
-        return movies
+        return movies 
