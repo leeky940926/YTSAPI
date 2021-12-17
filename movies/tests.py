@@ -33,26 +33,26 @@ class TestMovieView(TestCase) :
         Genre.objects.bulk_create(genre_list)
         
         movie_list = [
-            Movie(id=1, language_id=1, year=2021, runtime=90, summary='good movie1', title='new movie1', rating=3.2),
-            Movie(id=2, language_id=2, year=2020, runtime=90, summary='good movie2', title='bad movie1', rating=9.5),
-            Movie(id=3, language_id=1, year=2021, runtime=90, summary='good movie3', title='sad movie1', rating=5.2),
-            Movie(id=4, language_id=3, year=2021, runtime=80, summary='good movie4', title='fun movie1', rating=7.2),
-            Movie(id=5, language_id=2, year=2021, runtime=80, summary='good movie5', title='new movie2', rating=8.2),
-            Movie(id=6, language_id=3, year=2020, runtime=80, summary='good movie6', title='new movie3', rating=10),
-            Movie(id=7, language_id=1, year=2021, runtime=100, summary='good movie7', title='good movie1', rating=8.5),
-            Movie(id=8, language_id=1, year=2021, runtime=90, summary='good movie8', title='bad movie2', rating=7.5),
-            Movie(id=9, language_id=1, year=2020, runtime=100, summary='good movie9', title='bad movie3', rating=7.5),
-            Movie(id=10, language_id=3, year=2019, runtime=110, summary='good movie10', title='new movie4', rating=2.5),
-            Movie(id=11, language_id=1, year=2019, runtime=90, summary='good movie11', title='sad movie2', rating=3.5),
-            Movie(id=12, language_id=1, year=2019, runtime=90, summary='good movie12', title='fun movie2', rating=9.5),
-            Movie(id=13, language_id=2, year=2021, runtime=130, summary='good movie13', title='old movie1', rating=5.5),
-            Movie(id=14, language_id=1, year=2021, runtime=90, summary='good movie14', title='old movie2', rating=4.5),
-            Movie(id=15, language_id=2, year=2017, runtime=140, summary='good movie15', title='old movie3', rating=6.5),
-            Movie(id=16, language_id=2, year=2021, runtime=90, summary='good movie16', title='action movie1', rating=8.5),
-            Movie(id=17, language_id=1, year=2021, runtime=150, summary='good movie17', title='action movie2', rating=6.7),
-            Movie(id=18, language_id=1, year=2016, runtime=90, summary='good movie18', title='action movie3', rating=8.7),
-            Movie(id=19, language_id=1, year=2021, runtime=90, summary='good movie19', title='action movie4', rating=7.7),
-            Movie(id=20, language_id=1, year=2021, runtime=90, summary='good movie20', title='action movie5', rating=4.7)
+            Movie(id=1, language_id=1, year=2021, runtime=90, summary='good movie1', title='new movie1'),
+            Movie(id=2, language_id=2, year=2020, runtime=90, summary='good movie2', title='bad movie1'),
+            Movie(id=3, language_id=1, year=2021, runtime=90, summary='good movie3', title='sad movie1'),
+            Movie(id=4, language_id=3, year=2021, runtime=80, summary='good movie4', title='fun movie1'),
+            Movie(id=5, language_id=2, year=2021, runtime=80, summary='good movie5', title='new movie2'),
+            Movie(id=6, language_id=3, year=2020, runtime=80, summary='good movie6', title='new movie3'),
+            Movie(id=7, language_id=1, year=2021, runtime=100, summary='good movie7', title='good movie1'),
+            Movie(id=8, language_id=1, year=2021, runtime=90, summary='good movie8', title='bad movie2'),
+            Movie(id=9, language_id=1, year=2020, runtime=100, summary='good movie9', title='bad movie3'),
+            Movie(id=10, language_id=3, year=2019, runtime=110, summary='good movie10', title='new movie4'),
+            Movie(id=11, language_id=1, year=2019, runtime=90, summary='good movie11', title='sad movie2'),
+            Movie(id=12, language_id=1, year=2019, runtime=90, summary='good movie12', title='fun movie2'),
+            Movie(id=13, language_id=2, year=2021, runtime=130, summary='good movie13', title='old movie1'),
+            Movie(id=14, language_id=1, year=2021, runtime=90, summary='good movie14', title='old movie2'),
+            Movie(id=15, language_id=2, year=2017, runtime=140, summary='good movie15', title='old movie3'),
+            Movie(id=16, language_id=2, year=2021, runtime=90, summary='good movie16', title='action movie1'),
+            Movie(id=17, language_id=1, year=2021, runtime=150, summary='good movie17', title='action movie2'),
+            Movie(id=18, language_id=1, year=2016, runtime=90, summary='good movie18', title='action movie3'),
+            Movie(id=19, language_id=1, year=2021, runtime=90, summary='good movie19', title='action movie4'),
+            Movie(id=20, language_id=1, year=2021, runtime=90, summary='good movie20', title='action movie5')
         ]
         Movie.objects.bulk_create(movie_list)
         
@@ -69,6 +69,12 @@ class TestMovieView(TestCase) :
             MovieGenre(id=10, movie_id=8, genre_id=1),
         ]
         MovieGenre.objects.bulk_create(movie_genre_list)
+        
+        review_list = [
+            Review(movie_id=1, text='재밌어요', rating=9, vote=1),
+            Review(movie_id=5, text='별로에요', rating=5, vote=0)
+        ]
+        Review.objects.bulk_create(review_list)
     
     def tearDown(self) :
         Language.objects.all().delete()
@@ -87,7 +93,7 @@ class TestMovieView(TestCase) :
                 {
                 'id'     : 5,
                 'title'  : 'new movie2',
-                'rating' : '8.20',
+                'rating' : '5.00',
                 'summary' : 'good movie5',
                 'genres' : [
                     {
@@ -103,7 +109,7 @@ class TestMovieView(TestCase) :
                 {
                 'id'     : 1,
                 'title'  : 'new movie1',
-                'rating' : '3.20',
+                'rating' : '9.00',
                 'summary' : 'good movie1',
                 'genres' : [
                     {
@@ -141,26 +147,26 @@ class DetailMovieView(TestCase) :
         Genre.objects.bulk_create(genre_list)
         
         movie_list = [
-            Movie(id=1, language_id=1, year=2021, runtime=90, summary='good movie1', title='new movie1', rating=3.2),
-            Movie(id=2, language_id=2, year=2020, runtime=90, summary='good movie2', title='bad movie1', rating=9.5),
-            Movie(id=3, language_id=1, year=2021, runtime=90, summary='good movie3', title='sad movie1', rating=5.2),
-            Movie(id=4, language_id=3, year=2021, runtime=80, summary='good movie4', title='fun movie1', rating=7.2),
-            Movie(id=5, language_id=2, year=2021, runtime=80, summary='good movie5', title='new movie2', rating=8.2),
-            Movie(id=6, language_id=3, year=2020, runtime=80, summary='good movie6', title='new movie3', rating=10),
-            Movie(id=7, language_id=1, year=2021, runtime=100, summary='good movie7', title='good movie1', rating=8.5),
-            Movie(id=8, language_id=1, year=2021, runtime=90, summary='good movie8', title='bad movie2', rating=7.5),
-            Movie(id=9, language_id=1, year=2020, runtime=100, summary='good movie9', title='bad movie3', rating=7.5),
-            Movie(id=10, language_id=3, year=2019, runtime=110, summary='good movie10', title='new movie4', rating=2.5),
-            Movie(id=11, language_id=1, year=2019, runtime=90, summary='good movie11', title='sad movie2', rating=3.5),
-            Movie(id=12, language_id=1, year=2019, runtime=90, summary='good movie12', title='fun movie2', rating=9.5),
-            Movie(id=13, language_id=2, year=2021, runtime=130, summary='good movie13', title='old movie1', rating=5.5),
-            Movie(id=14, language_id=1, year=2021, runtime=90, summary='good movie14', title='old movie2', rating=4.5),
-            Movie(id=15, language_id=2, year=2017, runtime=140, summary='good movie15', title='old movie3', rating=6.5),
-            Movie(id=16, language_id=2, year=2021, runtime=90, summary='good movie16', title='action movie1', rating=8.5),
-            Movie(id=17, language_id=1, year=2021, runtime=150, summary='good movie17', title='action movie2', rating=6.7),
-            Movie(id=18, language_id=1, year=2016, runtime=90, summary='good movie18', title='action movie3', rating=8.7),
-            Movie(id=19, language_id=1, year=2021, runtime=90, summary='good movie19', title='action movie4', rating=7.7),
-            Movie(id=20, language_id=1, year=2021, runtime=90, summary='good movie20', title='action movie5', rating=4.7)
+            Movie(id=1, language_id=1, year=2021, runtime=90, summary='good movie1', title='new movie1'),
+            Movie(id=2, language_id=2, year=2020, runtime=90, summary='good movie2', title='bad movie1'),
+            Movie(id=3, language_id=1, year=2021, runtime=90, summary='good movie3', title='sad movie1'),
+            Movie(id=4, language_id=3, year=2021, runtime=80, summary='good movie4', title='fun movie1'),
+            Movie(id=5, language_id=2, year=2021, runtime=80, summary='good movie5', title='new movie2'),
+            Movie(id=6, language_id=3, year=2020, runtime=80, summary='good movie6', title='new movie3'),
+            Movie(id=7, language_id=1, year=2021, runtime=100, summary='good movie7', title='good movie1'),
+            Movie(id=8, language_id=1, year=2021, runtime=90, summary='good movie8', title='bad movie2'),
+            Movie(id=9, language_id=1, year=2020, runtime=100, summary='good movie9', title='bad movie3'),
+            Movie(id=10, language_id=3, year=2019, runtime=110, summary='good movie10', title='new movie4'),
+            Movie(id=11, language_id=1, year=2019, runtime=90, summary='good movie11', title='sad movie2'),
+            Movie(id=12, language_id=1, year=2019, runtime=90, summary='good movie12', title='fun movie2'),
+            Movie(id=13, language_id=2, year=2021, runtime=130, summary='good movie13', title='old movie1'),
+            Movie(id=14, language_id=1, year=2021, runtime=90, summary='good movie14', title='old movie2'),
+            Movie(id=15, language_id=2, year=2017, runtime=140, summary='good movie15', title='old movie3'),
+            Movie(id=16, language_id=2, year=2021, runtime=90, summary='good movie16', title='action movie1'),
+            Movie(id=17, language_id=1, year=2021, runtime=150, summary='good movie17', title='action movie2'),
+            Movie(id=18, language_id=1, year=2016, runtime=90, summary='good movie18', title='action movie3'),
+            Movie(id=19, language_id=1, year=2021, runtime=90, summary='good movie19', title='action movie4'),
+            Movie(id=20, language_id=1, year=2021, runtime=90, summary='good movie20', title='action movie5')
         ]
         Movie.objects.bulk_create(movie_list)
         
@@ -202,7 +208,7 @@ class DetailMovieView(TestCase) :
                 'id' : 1,
                 'title' : 'new movie1',
                 'year' : 2021,
-                'rating' : '3.20',
+                'rating' : '7.00',
                 'genres' : [{
                     'id'    : 1,
                     'genre' : 'drama test'

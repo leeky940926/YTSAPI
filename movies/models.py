@@ -17,10 +17,9 @@ class Language(TimeStampModel) :
 class Movie(TimeStampModel) :
     title    = models.CharField(max_length=300)
     year     = models.PositiveIntegerField()
-    rating   = models.DecimalField(max_digits=5, decimal_places=3)
-    runtime  = models.PositiveIntegerField()
+    runtime  = models.PositiveIntegerField(null=True)
     genre    = models.ManyToManyField(Genre, through='MovieGenre')
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
+    language = models.ForeignKey(Language, on_delete=models.CASCADE, null=True)
     summary  = models.CharField(max_length=300)
     
     class Meta :
