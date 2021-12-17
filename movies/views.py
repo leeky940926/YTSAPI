@@ -118,7 +118,7 @@ class DetailMovieView(View) :
 class DetailReviewView(View) :
     def get(self, request, movie_id, review_id) :
         try :
-            review = Review.objects.prefetch_related('movie').get(movie__id=movie_id, id=review_id)
+            review = Review.objects.prefetch_related('movie').get(movie_id=movie_id, id=review_id)
             
             detail_review = {
                 'id'         : review.id,
@@ -139,10 +139,26 @@ class DetailReviewView(View) :
 
                 text   = data['text']
                 rating = data['rating']
-
-                Review.objects.filter(movie__id=movie_id, id=review_id).update(text=text, rating=rating)
+                
+                review = Review.objects.get(movie_id=movie_id, id=review_id)
+                review.text = text
+                review.rating = rating
+                review.save()
 
                 return JsonResponse({'message' : 'UPDATED_SUCCESS'}, status=201)
             
         except KeyError :
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400) 
+
+        except Review.DoesNotExist :
+            return JsonResponse({'message' : 'REVIEW_DOES_NOT_EXIST'}, status=400)
+    
+    def delete(self, request, movie_id, review_id) :
+        try :
+            with transaction.atomic() :
+                review = Review.objects.get(movie_id=movie_id, id=review_id)
+                review.delete()
+                return JsonResponse({'message' : 'DELETED_SUCCESS'}, status=201)
+        
+        except Review.DoesNotExist :
+            return JsonResponse({'message' : 'REVIEW_DOES_NOT_EXIST'}, status=400)
