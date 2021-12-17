@@ -39,6 +39,10 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
+CUSTOMIZED_APPS = [
+    'movies'
+]
+
 THIRD_PARTY_APPS = [
     'corsheaders'
 ]
@@ -50,7 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-] + THIRD_PARTY_APPS
+] + THIRD_PARTY_APPS + CUSTOMIZED_APPS
 
 
 MIDDLEWARE = [
