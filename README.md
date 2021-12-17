@@ -32,7 +32,7 @@
 
 ## ERD Diagram
 
-![기업과제1](https://user-images.githubusercontent.com/88086271/146574755-9b105780-61f7-4405-8d49-5af6405c95ab.png)
+![기업과제1 (1)](https://user-images.githubusercontent.com/88086271/146576137-57f0c197-f188-4e32-9128-b58e3f337424.png)
 
 
 <br>
