@@ -1,5 +1,12 @@
 ## Git Repository 소개
 
+안녕하세요.
+
+보안상 기업명을 말씀드릴 순 없고, 기업과제전형을 위해 만들어진 Repository입니다.
+
+제일 아래 Reference에도 적혀져 있지만, 기업과제전형을 위한 Repository기 때문에 이 코드를 이용한 이득 및 무단배포는 법적책임을 물을 수 있습니다.
+
+읽어주셔서 감사합니다.
 
 
 <br>
@@ -10,10 +17,9 @@
 2. ERD Diagram
 3. EndPoint
 4. Postman API Documentaion
-5. 구현 사항 상세 설명
-6. Unit Test 결과
-7. Commit Message GuideLines
-8. Reference
+5.  Unit Test 결과
+6. Commit Message GuideLines
+7. Reference
 
 <br>
 
@@ -26,29 +32,63 @@
 
 ## ERD Diagram
 
-
+![기업과제1](https://user-images.githubusercontent.com/88086271/146574755-9b105780-61f7-4405-8d49-5af6405c95ab.png)
 
 
 <br>
 
 ## EndPoint
 
+1. 영화 리스트 조회
 
+GET /movies
+
+2. 영화 디테일 조회
+
+GET /movies/{int:movie_id}
+
+3. 영화 추가
+
+POST /movies
+
+4. 리뷰 디테일 조회
+
+GET /movies/{int:movie_id}/reviews/{int:review_id}
+
+5. 리뷰 추가
+
+POST /movies/{int:movie_id}
+
+6. 리뷰 수정
+
+PUT /movies/{int:movie_id}/reviews/{int:review_id}
+
+7. 리뷰 삭제
+
+DELETE /movies/{int:movie_id}/reviews/{int:review_id}
+
+8. 리뷰 추천
+
+POST /movies/{int:movie_id}/reviews/{int:review_id}
+
+9. 리뷰추천 삭제
+
+DELETE /movies/{int:movie_id}/reviews/{int:review_id}/votes/{int:review_vote_id}
 
 
 <br>
 
 ## Postman API Documentation
 
+![Postman API Documentation 명세서](https://documenter.getpostman.com/view/17716434/UVRAH6TB)
 
 
 <br>
 
-## 구현 사항 상세 설명
-
-
 
 ## Unit Test 결과
+
+![image](https://user-images.githubusercontent.com/88086271/146575560-cb39e2e9-ec0b-46bd-9133-f1060c38b850.png)
 
 
 <br>
