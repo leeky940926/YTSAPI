@@ -32,6 +32,10 @@ class MovieFilter :
             movies = Movie.objects.prefetch_related('review_set', 'genre').filter(movie_filter).annotate(review_rating=Avg('review__rating')).order_by('-review_rating', '-created_at')[offset:offset+limit]
             return movies
         
+        if rating == 'l' :
+            movies = Movie.objects.prefetch_related('review_set', 'genre').filter(movie_filter).annotate(review_rating=Avg('review__rating')).order_by('review_rating', '-created_at')[offset:offset+limit]
+            return movies
+        
         movies = Movie.objects.prefetch_related('review_set', 'genre').filter(movie_filter).order_by('-created_at')[offset:offset+limit]
             
         return movies 
