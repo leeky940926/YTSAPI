@@ -1,5 +1,7 @@
-from django.db.models import Q
-
+from django.db.models import (
+    Q,
+    Avg
+)
 from movies.models    import Movie
 
 class MovieFilter :
@@ -23,9 +25,9 @@ class MovieFilter :
             movie_filter.add(Q(title__icontains = title), Q.AND)
      
         if rating == 'h' :
-            movies = Movie.objects.prefetch_related('genre').filter(movie_filter).order_by('-rating', '-created_at')[offset:offset+limit]
+            movies = Movie.objects.prefetch_related('review_set', 'genre').filter(movie_filter).annotate(review_rating=Avg('review__rating')).order_by('-review_rating', '-created_at')[offset:offset+limit]
             return movies
         
-        movies = Movie.objects.prefetch_related('genre').filter(movie_filter).order_by('-created_at')[offset:offset+limit]
+        movies = Movie.objects.prefetch_related('review_set', 'genre').filter(movie_filter).order_by('-created_at')[offset:offset+limit]
             
         return movies 

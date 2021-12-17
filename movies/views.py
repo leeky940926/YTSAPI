@@ -1,10 +1,15 @@
-from django import views
-from django.views import View
-from django.http  import JsonResponse
+import json
+
+from django.views    import View
+from django.http     import JsonResponse
+from django.db       import transaction
+from django.db.utils import IntegrityError
 
 from movies.filterlists import MovieFilter
-from movies.models import Movie
-
+from movies.models      import (
+    Movie,
+    MovieGenre
+)
 class MovieView(View) :
     def get(self, request) :  
         page   = request.GET.get('page', 1)
@@ -12,13 +17,13 @@ class MovieView(View) :
         rating = request.GET.get('rating')
         title  = request.GET.get('title')
         
-        movies = MovieFilter.filter_movies(page, year, rating, title)
+        movies = MovieFilter.filter_movies(page, year, rating, title)       
 
         movie_list = [
             {
                 'id'      : movie.id,
                 'title'   : movie.title,
-                'rating'  : round(movie.rating, 2),
+                'rating'  : round(sum([val.rating for val in movie.review_set.all()]) / len(movie.review_set.all()) if movie.review_set.all() else 0, 2),
                 'summary' : movie.summary,
                 'genres'  : [{
                     'id'    : genre.id,
@@ -29,6 +34,36 @@ class MovieView(View) :
         
         return JsonResponse({'movie_list' : movie_list}, status=200)
 
+    def post(self, request) :
+        try :
+            with transaction.atomic() :
+                data = json.loads(request.body)
+                
+                title   = data['title']
+                year    = int(data['year'])
+                genres  = data['genres']
+                summary = data['summary']
+                
+                movie = Movie.objects.create(
+                    title   = title,
+                    year    = year,
+                    summary = summary
+                )
+                
+                for genre_id in genres :
+                    MovieGenre.objects.create(movie=movie, genre_id=genre_id)
+                
+                return JsonResponse({'message' : 'CREATED_SUCCESS'}, status=201)
+
+        except KeyError :
+            return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
+
+        except IntegrityError :
+            return JsonResponse({'message' : 'IntegrityError'}, status=400)
+
+        except TypeError : 
+            return JsonResponse({'message' : 'TYPE_ERROR'}, status=400)
+        
 class DetailMovieView(View) :
     def get(self, request, movie_id) :
         try :
@@ -38,7 +73,7 @@ class DetailMovieView(View) :
                 'id'     : movie.id,
                 'title'  : movie.title,
                 'year'   : movie.year,
-                'rating' : round(movie.rating, 2),
+                'rating' : round(sum([val.rating for val in movie.review_set.all()]) / len(movie.review_set.all()) if movie.review_set.all() else 0, 2),
                 'genres' : [{
                     'id'    : genre.id,
                     'genre' : genre.genre
