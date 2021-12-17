@@ -20,8 +20,9 @@ class MovieView(View) :
         year   = request.GET.get('year')
         rating = request.GET.get('rating')
         title  = request.GET.get('title')
+        genre  = request.GET.get('genre')
         
-        movies = MovieFilter.filter_movies(page, year, rating, title)       
+        movies = MovieFilter.filter_movies(page, year, rating, title, genre)       
 
         movie_list = [
             {
