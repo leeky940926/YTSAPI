@@ -167,7 +167,7 @@ class DetailReviewView(View) :
         except Review.DoesNotExist :
             return JsonResponse({'message' : 'REVIEW_DOES_NOT_EXIST'}, status=400)
     
-    def patch(self, request, movie_id, review_id) :
+    def post(self, request, movie_id, review_id) :
         try :
             with transaction.atomic() :
                 review      = Review.objects.get(id=review_id, movie_id=movie_id)

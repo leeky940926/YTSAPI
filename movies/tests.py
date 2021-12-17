@@ -470,7 +470,7 @@ class TestDetailReviewView(TransactionTestCase) :
     def test_success_review_vote(self) :
         client = Client()
         
-        response = client.patch('/movies/1/reviews/1')
+        response = client.post('/movies/1/reviews/1')
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), {'message' : 'VOTE_SUCCESS'})
