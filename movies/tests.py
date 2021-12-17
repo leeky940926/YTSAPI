@@ -436,3 +436,32 @@ class TestDetailReviewView(TransactionTestCase) :
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), {'message' : 'UPDATED_SUCCESS'})
+    
+    def test_failure_update_review_raise_review_does_not_exist(self) :
+        client = Client()
+        
+        data = {
+            'text' : 'hihi',
+            'rating' : 5.5
+        }
+        
+        response = client.put('/movies/1/11111', json.dumps(data), content_type='application/json')
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'message' : 'REVIEW_DOES_NOT_EXIST'})
+    
+    def test_success_delete_review(self) :
+        client = Client()
+        
+        response = client.delete('/movies/1/1')
+        
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json(), {'message' : 'DELETED_SUCCESS'})
+    
+    def test_failure_delete_review_raise_review_does_not_exist(self) :
+        client = Client()
+        
+        response = client.delete('/movies/1/111111')
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'message' : 'REVIEW_DOES_NOT_EXIST'})
