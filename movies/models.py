@@ -1,4 +1,5 @@
 from django.db   import models
+from django.db.models.deletion import CASCADE
 
 from core.models import TimeStampModel
 
@@ -40,3 +41,9 @@ class Review(TimeStampModel) :
     
     class Meta :
         db_table = 'reviews'
+
+class ReivewVote(TimeStampModel) :
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
+    
+    class Meta :
+        db_table = 'review_votes'

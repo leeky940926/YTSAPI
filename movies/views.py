@@ -1,14 +1,17 @@
 import json
 
-from django.views    import View
-from django.http     import JsonResponse
-from django.db       import transaction
-from django.db.utils import IntegrityError
+from django.views       import View
+from django.http        import JsonResponse
+from django.db          import transaction
+from django.db.utils    import IntegrityError
+from django.db.models   import F
+from django.utils       import timezone
 
 from movies.filterlists import MovieFilter
 from movies.models      import (
     Movie,
     MovieGenre,
+    ReivewVote,
     Review
 )
 class MovieView(View) :
@@ -140,8 +143,8 @@ class DetailReviewView(View) :
                 text   = data['text']
                 rating = data['rating']
                 
-                review = Review.objects.get(movie_id=movie_id, id=review_id)
-                review.text = text
+                review        = Review.objects.get(movie_id=movie_id, id=review_id)
+                review.text   = text
                 review.rating = rating
                 review.save()
 
@@ -159,6 +162,40 @@ class DetailReviewView(View) :
                 review = Review.objects.get(movie_id=movie_id, id=review_id)
                 review.delete()
                 return JsonResponse({'message' : 'DELETED_SUCCESS'}, status=201)
+        
+        except Review.DoesNotExist :
+            return JsonResponse({'message' : 'REVIEW_DOES_NOT_EXIST'}, status=400)
+    
+    def patch(self, request, movie_id, review_id) :
+        try :
+            with transaction.atomic() :
+                review      = Review.objects.get(id=review_id, movie_id=movie_id)
+                review.vote = F('vote') + 1
+                review.save()
+                
+                ReivewVote.objects.create(review_id = review_id)
+                
+                return JsonResponse({'message' : 'VOTE_SUCCESS'}, status=201)
+        
+        except Review.DoesNotExist :
+            return JsonResponse({'message' : 'REVIEW_DOES_NOT_EXIST'}, status=400) 
+
+class ReviewVoteView(View) :
+    def delete(self, request, movie_id, review_id, review_vote_id) :
+        try :
+            with transaction.atomic() :
+                review      = Review.objects.get(id=review_id, movie_id=movie_id)
+                review.vote = F('vote') - 1
+                review.save()
+                
+                review_vote = ReivewVote.objects.get(id=review_vote_id)
+                review_vote.deleted_at = timezone.now()
+                review_vote.save()
+            
+                return JsonResponse({'message' : 'DELETED_SUCCESS'}, status=201)
+        
+        except ReivewVote.DoesNotExist :
+            return JsonResponse({'message' : 'REVIEWVOTE_DOES_NOT_EXIST'}, status=400)
         
         except Review.DoesNotExist :
             return JsonResponse({'message' : 'REVIEW_DOES_NOT_EXIST'}, status=400)
