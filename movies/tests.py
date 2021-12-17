@@ -1,8 +1,6 @@
 import json
-from django.db import transaction
 
 from django.test import (
-    TestCase,
     TransactionTestCase,
     Client
 )
