@@ -12,6 +12,7 @@ from movies.models import (
     Movie,
     Genre,
     MovieGenre,
+    ReivewVote,
     Review
 )
 
@@ -404,7 +405,7 @@ class TestDetailReviewView(TransactionTestCase) :
     def test_success_get_detail_review(self) :
         client = Client()
         
-        response = client.get('/movies/1/1')
+        response = client.get('/movies/1/reviews/1')
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {
@@ -419,7 +420,7 @@ class TestDetailReviewView(TransactionTestCase) :
     def test_failure_get_detail_review_raise_review_does_not_exist(self) :
         client = Client()
         
-        response = client.get('/movies/1/111')
+        response = client.get('/movies/1/reviews/111')
         
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : 'REVIEW_DOES_NOT_EXIST'})
@@ -432,7 +433,7 @@ class TestDetailReviewView(TransactionTestCase) :
             'rating' : 5.5
         }
         
-        response = client.put('/movies/1/1', json.dumps(data), content_type='application/json')
+        response = client.put('/movies/1/reviews/1', json.dumps(data), content_type='application/json')
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), {'message' : 'UPDATED_SUCCESS'})
@@ -445,7 +446,7 @@ class TestDetailReviewView(TransactionTestCase) :
             'rating' : 5.5
         }
         
-        response = client.put('/movies/1/11111', json.dumps(data), content_type='application/json')
+        response = client.put('/movies/1/reviews/11111', json.dumps(data), content_type='application/json')
         
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : 'REVIEW_DOES_NOT_EXIST'})
@@ -453,7 +454,7 @@ class TestDetailReviewView(TransactionTestCase) :
     def test_success_delete_review(self) :
         client = Client()
         
-        response = client.delete('/movies/1/1')
+        response = client.delete('/movies/1/reviews/1')
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), {'message' : 'DELETED_SUCCESS'})
@@ -461,7 +462,88 @@ class TestDetailReviewView(TransactionTestCase) :
     def test_failure_delete_review_raise_review_does_not_exist(self) :
         client = Client()
         
-        response = client.delete('/movies/1/111111')
+        response = client.delete('/movies/1/reviews/111111')
         
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : 'REVIEW_DOES_NOT_EXIST'})
+    
+    def test_success_review_vote(self) :
+        client = Client()
+        
+        response = client.patch('/movies/1/reviews/1')
+        
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json(), {'message' : 'VOTE_SUCCESS'})
+
+class TestReviewVoteView(TransactionTestCase) :
+    
+    TransactionTestCase.maxDiff = None
+    
+    def setUp(self) :
+        language_list = [
+            Language(id=1, language='kr'),
+            Language(id=2, language='en'),
+            Language(id=3, language='ja')
+        ]
+        Language.objects.bulk_create(language_list)
+        
+        movie_list = [
+            Movie(id=1, language_id=1, year=2021, runtime=90, summary='good movie1', title='new movie1'),
+            Movie(id=2, language_id=2, year=2020, runtime=90, summary='good movie2', title='bad movie1'),
+            Movie(id=3, language_id=1, year=2021, runtime=90, summary='good movie3', title='sad movie1'),
+            Movie(id=4, language_id=3, year=2021, runtime=80, summary='good movie4', title='fun movie1'),
+            Movie(id=5, language_id=2, year=2021, runtime=80, summary='good movie5', title='new movie2'),
+            Movie(id=6, language_id=3, year=2020, runtime=80, summary='good movie6', title='new movie3'),
+            Movie(id=7, language_id=1, year=2021, runtime=100, summary='good movie7', title='good movie1'),
+            Movie(id=8, language_id=1, year=2021, runtime=90, summary='good movie8', title='bad movie2'),
+            Movie(id=9, language_id=1, year=2020, runtime=100, summary='good movie9', title='bad movie3'),
+            Movie(id=10, language_id=3, year=2019, runtime=110, summary='good movie10', title='new movie4'),
+            Movie(id=11, language_id=1, year=2019, runtime=90, summary='good movie11', title='sad movie2'),
+            Movie(id=12, language_id=1, year=2019, runtime=90, summary='good movie12', title='fun movie2'),
+            Movie(id=13, language_id=2, year=2021, runtime=130, summary='good movie13', title='old movie1'),
+            Movie(id=14, language_id=1, year=2021, runtime=90, summary='good movie14', title='old movie2'),
+            Movie(id=15, language_id=2, year=2017, runtime=140, summary='good movie15', title='old movie3'),
+            Movie(id=16, language_id=2, year=2021, runtime=90, summary='good movie16', title='action movie1'),
+            Movie(id=17, language_id=1, year=2021, runtime=150, summary='good movie17', title='action movie2'),
+            Movie(id=18, language_id=1, year=2016, runtime=90, summary='good movie18', title='action movie3'),
+            Movie(id=19, language_id=1, year=2021, runtime=90, summary='good movie19', title='action movie4'),
+            Movie(id=20, language_id=1, year=2021, runtime=90, summary='good movie20', title='action movie5')
+        ]
+        Movie.objects.bulk_create(movie_list)
+        
+        review_list = [
+            Review(id=1, movie_id=1, text='재밌어요', rating=9, vote=1),
+            Review(id=2, movie_id=1, text='별로에요', rating=5, vote=0)
+        ]
+        Review.objects.bulk_create(review_list)
+        ReivewVote.objects.create(id=1, review_id=1)
+    
+    def tearDown(self) :
+        Language.objects.all().delete()
+        Movie.objects.all().delete()
+        Review.objects.all().delete()
+        ReivewVote.objects.all().delete()
+    
+    def test_success_soft_delete_review_vote(self) :
+        client = Client()
+        
+        response = client.delete('/movies/1/reviews/1/votes/1')
+        
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json(), {'message' : 'DELETED_SUCCESS'})
+        
+    def test_failure_soft_delete_raise_review_does_not_exist(self) :
+        client = Client()
+        
+        response = client.delete('/movies/1/reviews/1111/votes/1')
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'message' : 'REVIEW_DOES_NOT_EXIST'})
+    
+    def test_failure_soft_delete_raise_review_vote_does_not_exist(self) :
+        client = Client()
+        
+        response = client.delete('/movies/1/reviews/1/votes/1111')
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'message' : 'REVIEWVOTE_DOES_NOT_EXIST'})
